@@ -7,6 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <DBCamera/DBCameraManager.h>
+#import <DBCamera/DBCameraContainerViewController.h>
+
 #import "STPCameraView.h"
 #import "STPCameraViewController.h"
 #import "STPCameraNavigationController.h"

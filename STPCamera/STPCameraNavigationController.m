@@ -24,4 +24,16 @@
     return YES;
 }
 
+- (NSUInteger)supportedInterfaceOrientations {
+    if (self.topViewController.presentedViewController) {
+        return self.topViewController.presentedViewController.supportedInterfaceOrientations;
+    }
+    return self.topViewController.supportedInterfaceOrientations;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return self.topViewController.preferredInterfaceOrientationForPresentation;
+}
+
+
 @end

@@ -15,4 +15,9 @@
 @property (nonatomic) CGFloat collectionViewContentHeightRatio;
 @property (nonatomic) UIEdgeInsets collectionViewContentInsets;
 
+@property (nonatomic, readonly) NSArray *images;
+
+- (void)setImages:(NSArray *)images;
+- (void)addImage:(UIImage *)image;
+
 @end

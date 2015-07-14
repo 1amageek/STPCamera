@@ -8,6 +8,29 @@
 
 #import "STPCameraViewController.h"
 
+@interface STPCameraImageCell : UICollectionViewCell
+
+@property (nonatomic) UIImage *image;
+- (void)setImage:(UIImage *)image;
+@end
+
+
+@implementation STPCameraImageCell
+
+- (void)setImage:(UIImage *)image
+{
+    _image = image;
+    if (image) {
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+        imageView.image = image;
+        imageView.contentMode = UIViewContentModeScaleAspectFill;
+        self.backgroundView = imageView;
+    }
+}
+
+
+@end
+
 @interface STPCameraViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic) CGFloat collectionViewContentHeight;
@@ -15,6 +38,16 @@
 @end
 
 @implementation STPCameraViewController
+
+- (instancetype)initWithDelegate:(id<DBCameraViewControllerDelegate>)delegate cameraView:(id)camera
+{
+    self = [super initWithDelegate:delegate cameraView:camera];
+    if (self) {
+        _images = @[];
+    }
+    return self;
+}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -34,10 +67,32 @@
     _collectionView.contentInset = _collectionViewContentInsets;
     _collectionView.backgroundColor = [UIColor clearColor];
     _collectionView.opaque = YES;
+    _collectionView.alwaysBounceHorizontal = YES;
     
-    [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"CameraImageCell"];
+    [_collectionView registerClass:[STPCameraImageCell class] forCellWithReuseIdentifier:@"STPCameraImageCell"];
     [self.view addSubview:_collectionView];
     
+}
+
+- (void)setImages:(NSArray *)images
+{
+    _images = images;
+}
+
+- (void)addImage:(UIImage *)image
+{
+    if (image) {
+        NSMutableArray *images = [NSMutableArray arrayWithArray:_images];
+        [images insertObject:image atIndex:0];
+        _images = images;
+        
+        [self.collectionView performBatchUpdates:^{
+            [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
+        } completion:^(BOOL finished) {
+            
+        }];
+        
+    }
 }
 
 - (CGFloat)collectionViewContentHeight
@@ -47,13 +102,15 @@
 
 - (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 50;
+    return _images.count;
 }
 
 - (nonnull UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"CameraImageCell" forIndexPath:indexPath];
+    STPCameraImageCell *cell = (STPCameraImageCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"STPCameraImageCell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor whiteColor];
+    [cell setImage:[self.images objectAtIndex:indexPath.item]];
+    
     return cell;
 }
 
