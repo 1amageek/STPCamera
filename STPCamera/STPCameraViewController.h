@@ -7,10 +7,13 @@
 //
 
 #import "DBCameraViewController.h"
+#import "STPCameraManager.h"
 #import "STPCameraContentCollectionView.h"
+
 
 @interface STPCameraViewController : DBCameraViewController
 
+@property (nonatomic) STPCameraManager *manager;
 @property (nonatomic) STPCameraContentCollectionView *collectionView;
 @property (nonatomic) CGFloat collectionViewContentHeightRatio;
 @property (nonatomic) UIEdgeInsets collectionViewContentInsets;

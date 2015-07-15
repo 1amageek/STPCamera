@@ -17,6 +17,7 @@
 		8C8CA1A11B540901009A6271 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C8CA19F1B540901009A6271 /* Main.storyboard */; };
 		8C8CA1A31B540901009A6271 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C8CA1A21B540901009A6271 /* Assets.xcassets */; };
 		8C8CA1A61B540901009A6271 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C8CA1A41B540901009A6271 /* LaunchScreen.storyboard */; };
+		8CD392461B55DB790029AD13 /* STPCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CD392451B55DB790029AD13 /* STPCameraManager.m */; };
 		DC30DA2E0D011D4E880DE0C1 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F7708D5CEE6B9365779D80 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,8 @@
 		8C8CA1A21B540901009A6271 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8C8CA1A51B540901009A6271 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8C8CA1A71B540901009A6271 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8CD392441B55DB790029AD13 /* STPCameraManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STPCameraManager.h; sourceTree = "<group>"; };
+		8CD392451B55DB790029AD13 /* STPCameraManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPCameraManager.m; sourceTree = "<group>"; };
 		C3F7708D5CEE6B9365779D80 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -81,6 +84,8 @@
 				8C8CA19A1B540901009A6271 /* AppDelegate.m */,
 				8C8CA19C1B540901009A6271 /* ViewController.h */,
 				8C8CA19D1B540901009A6271 /* ViewController.m */,
+				8CD392441B55DB790029AD13 /* STPCameraManager.h */,
+				8CD392451B55DB790029AD13 /* STPCameraManager.m */,
 				8C4F8A811B540ADC00940495 /* STPCameraView.h */,
 				8C4F8A821B540ADC00940495 /* STPCameraView.m */,
 				8C4F8A841B540B0C00940495 /* STPCameraViewController.h */,
@@ -228,6 +233,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8CD392461B55DB790029AD13 /* STPCameraManager.m in Sources */,
 				8C8CA19E1B540901009A6271 /* ViewController.m in Sources */,
 				8C4F8A8C1B548FDC00940495 /* STPCameraContentCollectionView.m in Sources */,
 				8C4F8A831B540ADC00940495 /* STPCameraView.m in Sources */,
