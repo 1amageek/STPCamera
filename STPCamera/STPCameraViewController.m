@@ -2,127 +2,212 @@
 //  STPCameraViewController.m
 //  STPCamera
 //
-//  Created by Norikazu on 2015/07/14.
+//  Created by 1amageek on 2015/10/30.
 //  Copyright © 2015年 Stamp inc. All rights reserved.
 //
 
 #import "STPCameraViewController.h"
+#import "STPCameraManager.h"
+#import "STPCameraView.h"
 
-@interface STPCameraImageCell : UICollectionViewCell
+@interface STPCameraViewController () <STPCameraManagerDelegate, STPCameraViewDelegate>
 
-@property (nonatomic) UIImage *image;
-- (void)setImage:(UIImage *)image;
-@end
-
-
-@implementation STPCameraImageCell
-
-- (void)setImage:(UIImage *)image
-{
-    _image = image;
-    if (image) {
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-        imageView.image = image;
-        imageView.contentMode = UIViewContentModeScaleAspectFill;
-        self.backgroundView = imageView;
-    }
-}
-
-
-@end
-
-@interface STPCameraViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
-
-@property (nonatomic) CGFloat collectionViewContentHeight;
+@property (nonatomic) STPCameraView *cameraView;
+@property (nonatomic) UIView *preview;
+@property (nonatomic) AVCaptureVideoPreviewLayer *captureVideoPreviewLayer;
 
 @end
 
 @implementation STPCameraViewController
 
-- (instancetype)initWithDelegate:(id<DBCameraViewControllerDelegate>)delegate cameraView:(id)camera
+
++ (void)requestAccessCameraCompletionHandler:(void (^)(BOOL authorized))handler
 {
-    self = [super initWithDelegate:delegate cameraView:camera];
-    if (self) {
-        _images = @[];
+    AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    switch (status) {
+        case AVAuthorizationStatusAuthorized: {
+            // プライバシー設定でカメラの使用が許可されている場合
+            dispatch_async(dispatch_get_main_queue(), ^{
+                handler(YES);
+            });
+            break;
+        }
+        case AVAuthorizationStatusDenied: {
+            // プライバシー設定でカメラの使用が禁止されている場合
+            handler(NO);
+            break;
+        }
+        case AVAuthorizationStatusRestricted: {
+            // 機能制限の場合とあるが、実際にこの値をとることがなかった
+            handler(NO);
+            break;
+        }
+        case AVAuthorizationStatusNotDetermined: {
+            // 初回起動時に許可設定を促すダイアログが表示される
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+                if (granted) {
+                    // 許可された場合の処理
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        handler(YES);
+                    });
+                } else {
+                    // 許可してもらえない場合
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        handler(NO);
+                    });
+                }
+            }];
+            break;
+        }
     }
-    return self;
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
 
-- (void)viewDidLoad {
+- (BOOL)prefersStatusBarHidden
+{
+    return YES;
+}
+
+- (void)loadView
+{
+    [super loadView];
+    [self.view addSubview:self.cameraView];
+}
+
+- (void)setupAVCapture
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        NSError *error = nil;
+        AVCaptureSession *session = [AVCaptureSession new];
+        AVCaptureDevice *camera = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+        AVCaptureDeviceInput *cameraInput = [[AVCaptureDeviceInput alloc] initWithDevice:camera error:&error];
+        AVCaptureStillImageOutput *stillImageOut = [AVCaptureStillImageOutput new];
+        
+        if ([session canAddInput:cameraInput]) {
+            [session addInput:cameraInput];
+        }
+        
+        if ([session canAddOutput:stillImageOut]) {
+            [session addOutput:stillImageOut];
+        }
+        
+        _captureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:session];
+        _captureVideoPreviewLayer.frame = self.view.bounds;
+        _captureVideoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+        [session startRunning];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [STPCameraManager sharedManager].captureSession = session;
+            [STPCameraManager sharedManager].deviceInput = cameraInput;
+            [STPCameraManager sharedManager].stillImageOut = stillImageOut;
+            [STPCameraManager sharedManager].delegate = self;
+            self.view.layer.masksToBounds = YES;
+            [self.view.layer insertSublayer:_captureVideoPreviewLayer atIndex:0];
+        });
+    });
+}
+
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    
-    _collectionViewContentHeightRatio = 0.15;
-    _collectionViewContentInsets = UIEdgeInsetsMake(self.view.bounds.size.height - self.collectionViewContentHeight, 5, 5, 5);
-    
-    
-    UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
-    layout.minimumInteritemSpacing = 0;
-    layout.minimumLineSpacing = 5;
-    layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    
-    _collectionView = [[STPCameraContentCollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:layout];
-    _collectionView.dataSource = self;
-    _collectionView.delegate = self;
-    _collectionView.contentInset = _collectionViewContentInsets;
-    _collectionView.backgroundColor = [UIColor clearColor];
-    _collectionView.opaque = YES;
-    _collectionView.alwaysBounceHorizontal = YES;
-    
-    [_collectionView registerClass:[STPCameraImageCell class] forCellWithReuseIdentifier:@"STPCameraImageCell"];
-    [self.view addSubview:_collectionView];
-    
+    [self setupAVCapture];
 }
 
-- (void)setImages:(NSArray *)images
+- (void)viewDidAppear:(BOOL)animated
 {
-    _images = images;
+    [super viewDidAppear:animated];
+    [self.cameraView drawAtPoint:self.view.center remove:YES];
 }
 
-- (void)addImage:(UIImage *)image
+#pragma mark - Elements
+
+- (STPCameraView *)cameraView
 {
-    if (image) {
-        NSMutableArray *images = [NSMutableArray arrayWithArray:_images];
-        [images insertObject:image atIndex:0];
-        _images = images;
-        
-        [self.collectionView performBatchUpdates:^{
-            [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
-        } completion:^(BOOL finished) {
-            
-        }];
-        
+    if (_cameraView) {
+        return _cameraView;
     }
+    _cameraView = [[STPCameraView alloc] initWithFrame:self.view.bounds];
+    _cameraView.delegate = self;
+    return _cameraView;
 }
 
-- (CGFloat)collectionViewContentHeight
+#pragma mark - Camera view delegate
+
+- (void)changeCamera
 {
-    return self.view.bounds.size.height * _collectionViewContentHeightRatio;
+    [[STPCameraManager sharedManager] changeCamara];
 }
 
-- (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+- (void)flashMode:(AVCaptureFlashMode)flashMode
 {
-    return _images.count;
+    [[STPCameraManager sharedManager] setFlashMode:flashMode];
 }
 
-- (nonnull UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath
+- (void)cameraView:(STPCameraView *)cameraView optimizeAtPoint:(CGPoint)point
 {
-    STPCameraImageCell *cell = (STPCameraImageCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"STPCameraImageCell" forIndexPath:indexPath];
-    cell.backgroundColor = [UIColor whiteColor];
-    [cell setImage:[self.images objectAtIndex:indexPath.item]];
+    CGPoint convertPoint = [[STPCameraManager sharedManager] convertToPointOfInterestFrom:self.captureVideoPreviewLayer.frame coordinates:point layer:self.captureVideoPreviewLayer];
+    [[STPCameraManager sharedManager] optimizeAtPoint:convertPoint];
+}
+
+- (void)cancel
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)cameraViewStartRecording
+{
+#if TARGET_IPHONE_SIMULATOR
     
-    return cell;
+    CGFloat r = (random() % 100 + 10)/100.0f;
+    CGFloat g = (random() % 100 + 10)/100.0f;
+    CGFloat b = (random() % 100 + 10)/100.0f;
+    UIImage *image;
+    UIGraphicsBeginImageContext(self.view.bounds.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetRGBFillColor(context, r, g, b, 1.0);
+    CGContextAddRect(context,self.view.bounds);
+    CGContextFillPath(context);
+    
+    image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+#else
+    [[STPCameraManager sharedManager] captureImageWithCompletionHandler:^(UIImage *image, CLLocation *location, NSDictionary *metaData, NSError *error) {
+        if (error) {
+            return ;
+        }
+        
+        if (image) {
+
+        }
+    }];
+#endif
 }
 
-- (CGSize)collectionView:(nonnull UICollectionView *)collectionView layout:(nonnull UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(nonnull NSIndexPath *)indexPath
+
+#pragma mark - CameraManager
+
+- (void)cameraManager:(STPCameraManager *)manager readyForLocationManager:(CLLocationManager *)locationManager
 {
-    return CGSizeMake(90, self.view.bounds.size.height - self.collectionViewContentInsets.top - self.collectionViewContentInsets.bottom);
+    NSLog(@"%s", __PRETTY_FUNCTION__);
 }
+
+- (void)dealloc
+{
+    [[STPCameraManager sharedManager] terminate];
+}
+
+#pragma mark - memory
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 
 
 @end

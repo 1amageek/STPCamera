@@ -2,25 +2,21 @@
 //  STPCameraViewController.h
 //  STPCamera
 //
-//  Created by Norikazu on 2015/07/14.
+//  Created by 1amageek on 2015/10/30.
 //  Copyright © 2015年 Stamp inc. All rights reserved.
 //
 
-#import "DBCameraViewController.h"
-#import "STPCameraManager.h"
-#import "STPCameraContentCollectionView.h"
+@import UIKit;
 
+@interface STPCameraViewController : UIViewController
 
-@interface STPCameraViewController : DBCameraViewController
+@property (nonatomic) NSArray *images;
 
-@property (nonatomic) STPCameraManager *manager;
-@property (nonatomic) STPCameraContentCollectionView *collectionView;
-@property (nonatomic) CGFloat collectionViewContentHeightRatio;
-@property (nonatomic) UIEdgeInsets collectionViewContentInsets;
+@property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
+@property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic) UILongPressGestureRecognizer *longPressGestureRecognizer;
 
-@property (nonatomic, readonly) NSArray *images;
-
-- (void)setImages:(NSArray *)images;
-- (void)addImage:(UIImage *)image;
++ (void)requestAccessCameraCompletionHandler:(void (^)(BOOL authorized))handler;
+- (void)cameraViewStartRecording;
 
 @end

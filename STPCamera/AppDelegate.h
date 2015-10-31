@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "STPCameraViewController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
