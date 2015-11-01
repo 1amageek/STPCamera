@@ -15,6 +15,7 @@
 		12B296121BE4B3DD007BE458 /* STPCameraView.m in Sources */ = {isa = PBXBuildFile; fileRef = 12B2960F1BE4B3DD007BE458 /* STPCameraView.m */; };
 		12B296141BE4B471007BE458 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12B296131BE4B471007BE458 /* ImageIO.framework */; };
 		12B296171BE4B771007BE458 /* NSDateFormatter+Exif.m in Sources */ = {isa = PBXBuildFile; fileRef = 12B296161BE4B771007BE458 /* NSDateFormatter+Exif.m */; };
+		12B2961A1BE4EC6D007BE458 /* STPPreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 12B296191BE4EC6D007BE458 /* STPPreviewViewController.m */; };
 		8C8CA1981B540901009A6271 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C8CA1971B540901009A6271 /* main.m */; };
 		8C8CA19B1B540901009A6271 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C8CA19A1B540901009A6271 /* AppDelegate.m */; };
 		8C8CA1A31B540901009A6271 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C8CA1A21B540901009A6271 /* Assets.xcassets */; };
@@ -35,6 +36,8 @@
 		12B296131BE4B471007BE458 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		12B296151BE4B771007BE458 /* NSDateFormatter+Exif.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDateFormatter+Exif.h"; sourceTree = "<group>"; };
 		12B296161BE4B771007BE458 /* NSDateFormatter+Exif.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDateFormatter+Exif.m"; sourceTree = "<group>"; };
+		12B296181BE4EC6D007BE458 /* STPPreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STPPreviewViewController.h; sourceTree = "<group>"; };
+		12B296191BE4EC6D007BE458 /* STPPreviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPPreviewViewController.m; sourceTree = "<group>"; };
 		5241C2D935788B9392ED7062 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		6CA11E638CB5C78C5D09F539 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		8C8CA1931B540901009A6271 /* STPCamera.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = STPCamera.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -90,6 +93,8 @@
 				12B2960B1BE4B3DD007BE458 /* STPCameraManager.m */,
 				12B2960C1BE4B3DD007BE458 /* STPCameraViewController.h */,
 				12B2960D1BE4B3DD007BE458 /* STPCameraViewController.m */,
+				12B296181BE4EC6D007BE458 /* STPPreviewViewController.h */,
+				12B296191BE4EC6D007BE458 /* STPPreviewViewController.m */,
 				12B2960E1BE4B3DD007BE458 /* STPCameraView.h */,
 				12B2960F1BE4B3DD007BE458 /* STPCameraView.m */,
 				12B296151BE4B771007BE458 /* NSDateFormatter+Exif.h */,
@@ -257,6 +262,7 @@
 				12B296171BE4B771007BE458 /* NSDateFormatter+Exif.m in Sources */,
 				8C8CA1981B540901009A6271 /* main.m in Sources */,
 				12B296101BE4B3DD007BE458 /* STPCameraManager.m in Sources */,
+				12B2961A1BE4EC6D007BE458 /* STPPreviewViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -188,6 +188,11 @@
 #endif
 }
 
+- (void)cameraManager:(STPCameraManager *)manager error:(NSError *)error
+{
+    NSLog(@"%@", error);
+}
+
 
 #pragma mark - CameraManager
 

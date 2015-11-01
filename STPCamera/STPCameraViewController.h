@@ -10,12 +10,6 @@
 
 @interface STPCameraViewController : UIViewController
 
-@property (nonatomic) NSArray *images;
-
-@property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
-@property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
-@property (nonatomic) UILongPressGestureRecognizer *longPressGestureRecognizer;
-
 + (void)requestAccessCameraCompletionHandler:(void (^)(BOOL authorized))handler;
 - (void)cameraViewStartRecording;
 

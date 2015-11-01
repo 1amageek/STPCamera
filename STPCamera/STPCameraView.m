@@ -107,6 +107,36 @@ static CGFloat kUnderToolbarHeight = 100;
     
 }
 
+- (void)setOptimizeProgress:(CGFloat)optimizeProgress
+{
+    _optimizeProgress = optimizeProgress;
+    
+    CGFloat opacityFocus = POPTransition(optimizeProgress, 0, 1);
+    self.focusBox.opacity = opacityFocus;
+    
+    CGFloat scaleFocus = POPTransition(optimizeProgress, 2.5, 1);
+    self.focusBox.transform = CATransform3DMakeScale(scaleFocus, scaleFocus, 1);
+    
+    CGFloat rad = POPTransition(optimizeProgress, 0, 1) * M_PI * 2;
+    CGFloat opacityExpose = sin(rad)/2 + 0.5;
+    self.exposeBox.opacity = opacityExpose;
+    
+    CGFloat scaleExpose = POPTransition(optimizeProgress, 0.6, 1);
+    self.exposeBox.transform = CATransform3DMakeScale(scaleExpose, scaleExpose, 1);
+    
+}
+
+- (void)setTriggerProgress:(CGFloat)triggerProgress
+{
+    _triggerProgress = triggerProgress;
+    
+    CGFloat alpha = POPTransition(triggerProgress, 1, 0);
+    self.shutterView.alpha = alpha;
+    
+    CGFloat triggerAlpha = POPTransition(triggerProgress, 0, 1);
+    self.triggerButton.alpha = triggerAlpha;
+}
+
 #pragma mark - element
 
 - (UIView *)upperToolbar
@@ -244,35 +274,29 @@ static CGFloat kUnderToolbarHeight = 100;
     }
 }
 
-- (void)setOptimizeProgress:(CGFloat)optimizeProgress
+- (void)triggerAction:(UIButton *)button
 {
-    _optimizeProgress = optimizeProgress;
-    
-    CGFloat opacityFocus = POPTransition(optimizeProgress, 0, 1);
-    self.focusBox.opacity = opacityFocus;
-    
-    CGFloat scaleFocus = POPTransition(optimizeProgress, 3, 1);
-    self.focusBox.transform = CATransform3DMakeScale(scaleFocus, scaleFocus, 1);
-    
-    CGFloat rad = POPTransition(optimizeProgress, 0, 1) * M_PI * 2;
-    CGFloat opacityExpose = sin(rad)/2 + 0.5;
-    self.exposeBox.opacity = opacityExpose;
-    
-    CGFloat scaleExpose = POPTransition(optimizeProgress, 0.6, 1);
-    self.exposeBox.transform = CATransform3DMakeScale(scaleExpose, scaleExpose, 1);
-    
+    POPBasicAnimation *animation = [POPBasicAnimation animation];
+    animation.duration = 0.25f;
+    POPAnimatableProperty *prop = [POPAnimatableProperty propertyWithName:@"inc.stamp.stp.camera.trigger.property" initializer:^(POPMutableAnimatableProperty *prop) {
+        prop.readBlock = ^(id obj, CGFloat values[]) {
+            values[0] = [obj triggerProgress];
+        };
+        prop.writeBlock = ^(id obj, const CGFloat values[]) {
+            [obj setTriggerProgress:values[0]];
+        };
+        prop.threshold = 0.01;
+    }];
+    animation.property = prop;
+    animation.fromValue = @(0);
+    animation.toValue = @(1);
+    [self pop_addAnimation:animation forKey:@"inc.stamp.stp.camera.trigger"];
+    if ([self.delegate respondsToSelector:@selector(cameraViewStartRecording)]) {
+        [self.delegate cameraViewStartRecording];
+    }
 }
 
-- (void)setTriggerProgress:(CGFloat)triggerProgress
-{
-    _triggerProgress = triggerProgress;
-    
-    CGFloat alpha = POPTransition(triggerProgress, 1, 0);
-    self.shutterView.alpha = alpha;
-
-    CGFloat triggerAlpha = POPTransition(triggerProgress, 0, 1);
-    self.triggerButton.alpha = triggerAlpha;
-}
+#pragma mark -
 
 - (void)drawAtPoint:(CGPoint)point remove:(BOOL)remove
 {
@@ -313,28 +337,6 @@ static CGFloat kUnderToolbarHeight = 100;
     animation.toValue = @(1);
     [self pop_addAnimation:animation forKey:@"inc.stamp.stp.camera.optimize"];
     
-}
-
-- (void)triggerAction:(UIButton *)button
-{
-    POPBasicAnimation *animation = [POPBasicAnimation animation];
-    animation.duration = 0.25f;
-    POPAnimatableProperty *prop = [POPAnimatableProperty propertyWithName:@"inc.stamp.stp.camera.trigger.property" initializer:^(POPMutableAnimatableProperty *prop) {
-        prop.readBlock = ^(id obj, CGFloat values[]) {
-            values[0] = [obj triggerProgress];
-        };
-        prop.writeBlock = ^(id obj, const CGFloat values[]) {
-            [obj setTriggerProgress:values[0]];
-        };
-        prop.threshold = 0.01;
-    }];
-    animation.property = prop;
-    animation.fromValue = @(0);
-    animation.toValue = @(1);
-    [self pop_addAnimation:animation forKey:@"inc.stamp.stp.camera.trigger"];
-    if ([self.delegate respondsToSelector:@selector(cameraViewStartRecording)]) {
-        [self.delegate cameraViewStartRecording];
-    }
 }
 
 #pragma mark - Focus / Expose Box
